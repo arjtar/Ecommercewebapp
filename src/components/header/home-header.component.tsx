@@ -1,21 +1,11 @@
 import{ Navbar, MegaMenu} from "flowbite-react"
-import { NavLink } from "react-router-dom";
+import LinkComponent from "../common/navbar-link.component";
 
-const LinkComponent=({text, icon="", link}: {text:string, icon? :string, link:string})=>{
-  return(<>
-<NavLink to={link} className={({isActive}: {isActive: boolean})=> isActive ?'text-cyan-800':'text-gray-700' + "hover:text-cyan" }>
-         
-          {text} {icon}       
-          </NavLink>
-  
-  </>)
-
-}
 
 const HomeHeader =()=>{
   return(<>
   <Navbar fluid rounded className="bg-gray-200 h-20 py-5 border-gray-200">
-      <Navbar.Brand href="https://flowbite-react.com">
+      <Navbar.Brand href="/" className="mx-0 md:mx-6 lg:mx-10 xl:mx-16">
         {/* <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" /> */}
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Flowbite React</span>
       </Navbar.Brand >

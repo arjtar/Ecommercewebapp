@@ -1,29 +1,70 @@
+import { NavLink, } from "react-router-dom"
+import bannerImage from "../../assets/images/register-page.jpg";
+import { BaseSyntheticEvent,  } from "react";
+import { INPUT_TYPE } from "../../../components/common/form/input.contract";
+import { InputLabel } from "../../../components/common/form/label.component";
+import { RoleSelector, TextInputComponent } from "../../../components/common/form/input.component";
+import {useForm} from "react-hook-form";
+import authSvc from "../auth.service";
+
+
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 
 const RegisterPage = ()=>{
+const registrationDTO = Yup.object({
 
-const RegisterPage =()=>{
-  const registrationDTO = Yup.object | {
-    
-  }
+name: Yup.string().matches(/^[a-zA-Z ]+$/, "Name can contain only alphabates and space").min(2).max(50).required(),
+email: Yup.string().email().required(),
+password: Yup.string().matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,25}$/, "Password must contain one lowercase, one uppercase, one special character and a digit and must be of length 8 to 16 characters.").required(),
+confirmPassword: Yup.string().oneOf([Yup.ref('password')]).required(),
+address: Yup.string().nullable().optional(),
+phone: Yup.string().matches(/^(\+{0,})(\d{0,})([(]{1}\d{1,3}[)]{0,}){0,}(\s?\d+|\+\d{2,3}\s{1}\d+|\d+){1}[\s|-]?\d+([\s|-]?\d+){1,2}(\s){0,}$/gm),
+image: Yup.mixed(),
+role: Yup.string().matches(/^(admin|seller|customer)$/,"Role can be admin or seller or customer").required()
+});
+
+
+
+const regsitrationDTO = authSvc.registerUserDto()
+
+const {control, handleSubmit, setValue, formState:{errors}} = useForm({
+  resolver: yupResolver(regsitrationDTO)
+})
+
+const submitEvent = async (data: any)=>{
+try{
+  const response = await authSvc.postRequest('/auth/register', data, {file: true});
+}catch(exception){
+  console.log(exception); 
 }
-
-
-
-  const {control, handleSubmit,setValue, formState:(errors)}=useForm()
-const sumitEvent = {data:any} =>{
-  console.log(data);
 }
 console.log(errors)
 
 return(<>
 
-
-
 <section className="bg-white">
   <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
-    <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
-      
+    <section className="relative flex h-28 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
+      <img
+        alt=""
+        src={bannerImage}
+        className="absolute inset-0 h-full w-full object-cover opacity-80"
+      />
+
+      <div className="hidden lg:relative lg:block lg:p-12">
+        
+
+        <h2 className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">
+          Welcome to Ecommerce
+        </h2>
+
+        <p className="mt-4 leading-relaxed text-white/90">
+        An e-commerce app facilitates online shopping by providing a comprehensive product catalog,
+         advanced search and filtering options, and personalized recommendations
+        </p>
+      </div>
     </section>
 
     <main
@@ -59,95 +100,114 @@ return(<>
           </p>
         </div>
 
-        <form action="#" className="mt-8 grid grid-cols-6 gap-6">
-          <div className="col-span-6 sm:col-span-3">
-            <label htmlFor="FirstName" className="block text-sm font-medium text-gray-700">
-              First Name
-            </label>
+        <form onSubmit={handleSubmit(submitEvent)} className="mt-8 grid grid-cols-6 gap-6">
+          
+        <div className="col-span-6">
+        <InputLabel htmlFor="name">Name</InputLabel>
+          <TextInputComponent 
+             name="name"
+             control={control}
+             msg={errors?.name?.message}
+          />
+          </div>
 
-            <input
-              type="text"
-              id="FirstName"
-              name="first_name"
-              className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+          
+            
+          <div className="col-span-6">
+          <InputLabel htmlFor="Email">Email</InputLabel>
+
+            <TextInputComponent
+            name="email"
+            type={INPUT_TYPE.EMAIL}
+            msg={errors?.email?.message}
+           control={control}           
             />
           </div>
 
           <div className="col-span-6 sm:col-span-3">
-            <label htmlFor="LastName" className="block text-sm font-medium text-gray-700">
-              Last Name
-            </label>
+          <InputLabel htmlFor="password">Password</InputLabel>
+            <TextInputComponent
+            name="password"
+            type={INPUT_TYPE.PASSWORD}
+            msg={errors?.Password ? "Password is required": ""}
+         control={control}            />
+          </div>
 
-            <input
-              type="text"
-              id="LastName"
-              name="last_name"
-              className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-            />
+          <div className="col-span-6 sm:col-span-3">
+          <InputLabel htmlFor="password_confirmation">Re-Password</InputLabel>
+            <TextInputComponent
+            name="password-confirmation"
+            type={INPUT_TYPE.PASSWORD}
+            msg={errors?.password_confirmation ? "Re-password is required": ""}
+             control={control}            />
+            
           </div>
 
           <div className="col-span-6">
-            <label htmlFor="Email" className="block text-sm font-medium text-gray-700"> Email </label>
-
-            <input
-              type="email"
-              id="Email"
-              name="email"
-              className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-            />
-          </div>
-
-          <div className="col-span-6 sm:col-span-3">
-            <label htmlFor="Password" className="block text-sm font-medium text-gray-700"> Password </label>
-
-            <input
-              type="password"
-              id="Password"
-              name="password"
-              className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-            />
-          </div>
-
-          <div className="col-span-6 sm:col-span-3">
-            <label htmlFor="PasswordConfirmation" className="block text-sm font-medium text-gray-700">
-              Password Confirmation
-            </label>
-
-            <input
-              type="password"
-              id="PasswordConfirmation"
-              name="password_confirmation"
-              className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-            />
+          <InputLabel htmlFor="address">Address</InputLabel>
+           <TextInputComponent
+           name="address"
+           control={control}
+           msg={errors?.address ?.message}
+           />
+             
           </div>
 
           <div className="col-span-6">
-            <label htmlFor="MarketingAccept" className="flex gap-4">
-              <input
-                type="checkbox"
-                id="MarketingAccept"
-                name="marketing_accept"
-                className="size-5 rounded-md border-gray-200 bg-white shadow-sm"
-              />
-
-              <span className="text-sm text-gray-700">
-                I want to receive emails about events, product updates and company announcements.
-              </span>
-            </label>
+          <InputLabel htmlFor="phone">Phone</InputLabel>  
+            <TextInputComponent
+            name="phone"
+            type={INPUT_TYPE.TEL}
+            msg={errors?.phone ?.message}
+            control={control}            
+            />
+            
           </div>
 
+          <div className="col-span-6">
+          <InputLabel htmlFor="role">Role</InputLabel>
+          <RoleSelector
+          control={control}
+          name="role"
+          msg={errors?.role ?.message}
+        />
+      </div>
+
+
+            
+     <div className="col-span-6">
+     <InputLabel htmlFor="image">Image</InputLabel>
+     <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="user_avatar_help"
+      id="user_avatar"
+       type="file"
+       accept="image/*"
+       onChange= {(e: BaseSyntheticEvent)=>{
+        e.preventDefault()
+        const name = e.target.name;
+        const image = e.target.files[0];
+        
+        setValue(name, image)
+       }}
+       />
+        <span className="text-sm italic text-red-700">{errors?.image?.message}</span>
+  </div>
+
+
+
+            
           <div className="col-span-6">
             <p className="text-sm text-gray-500">
               By creating an account, you agree to our
-              <a href="#" className="text-gray-700 underline"> terms and conditions </a>
+              <NavLink to="/terms-and-condition" className="text-gray-700 underline"> terms and conditions </NavLink>
               and
-              <a href="#" className="text-gray-700 underline">privacy policy</a>.
+              <NavLink to="/privacy-policy" className="text-gray-700 underline">privacy policy</NavLink>.
             </p>
           </div>
 
           <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
             <button
               className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+              type="submit"
             >
               Create an account
             </button>

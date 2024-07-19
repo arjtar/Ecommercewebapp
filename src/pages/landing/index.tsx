@@ -2,7 +2,6 @@
 import { HomePageBanner } from "../../components/banner/banner.component.tsx";
 import { CardWithImage } from "../../components/common/card/single-card.component.tsx";
 import HomePageTitle from "../../components/common/title/homepage-title.component.tsx";
-import HomeHeader from "../../components/header/home-header.component.tsx";
 import SingleProductComponent from "../../components/product/single-product.component.tsx";
 import './index.css'
 // import "flow-bite"
@@ -13,7 +12,7 @@ const LandingPage = ()=>{
   return(<>
 
 
-<HomeHeader/>
+
 
 <HomePageBanner />
 
