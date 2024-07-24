@@ -1,45 +1,54 @@
-import { NavLink, } from "react-router-dom"
-import bannerImage from "../../assets/images/register-page.jpg";
-import { BaseSyntheticEvent,  } from "react";
+import { NavLink, useNavigate, } from "react-router-dom"
+import bannerImage from "../../../assets/images/register-page.jpg";
+import { BaseSyntheticEvent, useState  } from "react";
 import { INPUT_TYPE } from "../../../components/common/form/input.contract";
 import { InputLabel } from "../../../components/common/form/label.component";
-import { RoleSelector, TextInputComponent } from "../../../components/common/form/input.component";
+import { RoleSelector, TextInputComponent,TextAreaInputComponent } from "../../../components/common/form/input.component";
+
 import {useForm} from "react-hook-form";
 import authSvc from "../auth.service";
 
-
-import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+import {toast} from "react-toastify"
 
 const RegisterPage = ()=>{
-const registrationDTO = Yup.object({
-
-name: Yup.string().matches(/^[a-zA-Z ]+$/, "Name can contain only alphabates and space").min(2).max(50).required(),
-email: Yup.string().email().required(),
-password: Yup.string().matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,25}$/, "Password must contain one lowercase, one uppercase, one special character and a digit and must be of length 8 to 16 characters.").required(),
-confirmPassword: Yup.string().oneOf([Yup.ref('password')]).required(),
-address: Yup.string().nullable().optional(),
-phone: Yup.string().matches(/^(\+{0,})(\d{0,})([(]{1}\d{1,3}[)]{0,}){0,}(\s?\d+|\+\d{2,3}\s{1}\d+|\d+){1}[\s|-]?\d+([\s|-]?\d+){1,2}(\s){0,}$/gm),
-image: Yup.mixed(),
-role: Yup.string().matches(/^(admin|seller|customer)$/,"Role can be admin or seller or customer").required()
-});
+const registrationDTO = authSvc.registerUserDto()
+const [loading, setLoading] = useState(false);
 
 
-
-const regsitrationDTO = authSvc.registerUserDto()
-
-const {control, handleSubmit, setValue, formState:{errors}} = useForm({
-  resolver: yupResolver(regsitrationDTO)
+const {control, handleSubmit, setValue, setError, formState:{errors}} = useForm({
+  resolver: yupResolver(registrationDTO)
 })
+const navigate = useNavigate()
+
 
 const submitEvent = async (data: any)=>{
+  setLoading(true);
 try{
   const response = await authSvc.postRequest('/auth/register', data, {file: true});
-}catch(exception){
-  console.log(exception); 
+  toast.success(response.message)
+  navigate('/')
+
+  
+}catch(exception: any){
+  console.log(exception.status)
+
+  if(+exception.status === 422) {
+    Object.keys(exception.data.result).map((field: any)=>{
+     
+      setError(field, {message: exception.data.result[field]});
+
+    })
+  }
+
+  toast.error(exception.data.message)
+
+} finally {
+  setLoading(false);
+  }
 }
-}
+
+
 console.log(errors)
 
 return(<>
@@ -107,14 +116,14 @@ return(<>
           <TextInputComponent 
              name="name"
              control={control}
-             msg={errors?.name?.message}
+             msg = {errors?.name?.message}
           />
           </div>
 
           
             
           <div className="col-span-6">
-          <InputLabel htmlFor="Email">Email</InputLabel>
+          <InputLabel htmlFor="email">Email</InputLabel>
 
             <TextInputComponent
             name="email"
@@ -129,8 +138,9 @@ return(<>
             <TextInputComponent
             name="password"
             type={INPUT_TYPE.PASSWORD}
-            msg={errors?.Password ? "Password is required": ""}
-         control={control}            />
+            msg={errors?.password ?.message}
+         control={control}           
+          />
           </div>
 
           <div className="col-span-6 sm:col-span-3">
@@ -138,17 +148,18 @@ return(<>
             <TextInputComponent
             name="password-confirmation"
             type={INPUT_TYPE.PASSWORD}
-            msg={errors?.password_confirmation ? "Re-password is required": ""}
-             control={control}            />
+            msg={errors?.confirmPassword ?.message}
+             control={control}           
+              />
             
           </div>
 
           <div className="col-span-6">
           <InputLabel htmlFor="address">Address</InputLabel>
-           <TextInputComponent
+           <TextAreaInputComponent
            name="address"
            control={control}
-           msg={errors?.address ?.message}
+           msg = {errors?.address ?.message}
            />
              
           </div>
@@ -158,7 +169,7 @@ return(<>
             <TextInputComponent
             name="phone"
             type={INPUT_TYPE.TEL}
-            msg={errors?.phone ?.message}
+            msg = {errors?.phone ?.message}
             control={control}            
             />
             
@@ -169,7 +180,7 @@ return(<>
           <RoleSelector
           control={control}
           name="role"
-          msg={errors?.role ?.message}
+          msg = {errors?.role ?.message}
         />
       </div>
 
@@ -178,8 +189,9 @@ return(<>
      <div className="col-span-6">
      <InputLabel htmlFor="image">Image</InputLabel>
      <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="user_avatar_help"
-      id="user_avatar"
+       id="user_avatar"
        type="file"
+       name="image"
        accept="image/*"
        onChange= {(e: BaseSyntheticEvent)=>{
         e.preventDefault()
@@ -189,7 +201,7 @@ return(<>
         setValue(name, image)
        }}
        />
-        <span className="text-sm italic text-red-700">{errors?.image?.message}</span>
+        <span className="text-sm italic text-red-700">{errors?.image?.message as string}</span>
   </div>
 
 
@@ -206,8 +218,9 @@ return(<>
 
           <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
             <button
-              className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+              className="inline-block shrink-0 rounded-md border disabled:cursor-not-allowed border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
               type="submit"
+              disabled = {loading}
             >
               Create an account
             </button>

@@ -1,0 +1,64 @@
+import axiosInstance from "../config/axios.config"
+
+abstract class HttpService {
+private headers = {};
+private params = {};
+
+    private getHeaders = {config:any} =>  {
+
+        if(config.auth){
+
+            this.headers={
+                ...this.headers,
+                "Authorization": "Bearer"
+            }  
+        }
+
+        if(config && (config.file || Config.files)) {
+            this.headers = {
+                ...this.headers,
+                "Content-Type": "multipart/form-data"
+            }
+        }
+
+        if(config && config.params){
+            ...this.params= {
+            ...config.params,
+            ...config.params
+        }
+        
+        }
+
+    } 
+
+    postRequest = async(url:string, data: any = {}, config:any = null): Promise<any> => {
+        try{
+            this.getHeaders(config);
+
+            const response = await axiosInstance.post(url, data, {
+                headers:{...this.headers},
+                params: {...this.params}
+            });
+            
+            return(response)
+        }catch(exception){
+            console.error("PostRequestException:",exception)
+            throw exception
+        }
+    }
+
+    getRequest = async (url:string, config:any = null)=>{}
+
+    putRequest = async(url:string, data:any ={}, config:  any = null)=>{}
+
+    patchRequest =async(url:string, data:any ={},config: any = null)=>{}
+
+    deleteRquest=async(url:string, config:any, any = null)=>{}
+
+}
+
+    export default HttpService;
+
+
+
+    

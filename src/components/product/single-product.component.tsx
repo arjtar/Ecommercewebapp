@@ -1,7 +1,4 @@
 
-
-
-
 import { Card } from "flowbite-react"
 
 const SingleProductComponent =()=>{
