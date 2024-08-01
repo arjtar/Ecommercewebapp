@@ -1,11 +1,21 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-
 import * as Yup from "yup"
 import { TextInputComponent } from "../../../components/common/form/input.component";
 import { INPUT_TYPE } from "../../../components/common/form/input.contract";
+import { toast } from "react-toastify";
+import authSvc from "../auth.service";
+import { useNavigate  } from "react-router-dom";
+import AuthContext from "../../../context/auth.context";
+import { useEffect, useContext } from "react";
+
+
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
+  const auth: any = useContext(AuthContext);
+
     const LoginDTO = Yup.object({
         email: Yup.string().email().required(),
         password:Yup.string().required()
@@ -15,9 +25,31 @@ const LoginPage = () => {
         resolver: yupResolver(LoginDTO)
     })
 
-    const loginAction = (data: any) =>{
+    const loginAction = async(data: any) =>{
+      try{
+        const response = await authSvc.postRequest('auth/login', data);
+        localStorage.setItem('_act ', response.result.token.access)
+        localStorage.setItem('_rft ', response.result.token.refresh)
+        toast.success("welcome to" +response.result.userDetail.role+ "pannel")
+        auth.setLoggedInUser(response.result.userDetail);
 
+        navigate('/'+response.result.userDetail.role)
+        
+
+
+      }catch(exception){
+        console.log(exception)
+        toast.error("Error while loging to file")
+      }
     }
+
+    useEffect(() =>{
+      if(auth.loggedInUser){
+        toast.info("You are already loggged in")
+        navigate("/" + auth.loggedInUser.role)
+      }
+    }, [auth])
+
   return (
     <>
       <section className="bg-gray-50 dark:bg-gray-900">

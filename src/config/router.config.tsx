@@ -6,12 +6,22 @@ import CategoryDetailPage from "../pages/category/category.detail";
 import {HomePageLayout,AdminPageLayout} from "../pages/layouts";
 import AdminDashboard from "../pages/dashboard/admin-dashboard.component";
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import { AuthProvider } from "../context/auth.context";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css"
+import AllowUser from "./permission.config";
+
+import { AdminBannerList, AdminBannerCreate, AdminBannerEdit } from "../pages/banner";
+
 
 const RouterConfig = ()=>{
     return(<>
+    <GoogleOAuthProvider clientId="893713264453-icn6ofnbgj9is0ffijlr9f3qg91d971r.apps.googleusercontent.com">
+    <AuthProvider>
+
+      <>
     <ToastContainer
     theme="colored"
     />
@@ -26,17 +36,36 @@ const RouterConfig = ()=>{
 
 
    <Route path='category:slug' element={<CategoryDetailPage/>}></Route>
-   <Route path='*' element = {<NotFound />}></Route> 
+   <Route path='*' element = {<NotFound url="/" redirecteTxt="Go Back to home Page"/>}></Route> 
   </Route>
 
-    <Route path="/admin" element={<AdminPageLayout />}>
+    <Route path="/admin" element={<AllowUser allowUser="admin" >
+      <AdminPageLayout />
+      </AllowUser>}>
+     <Route index element={<AdminDashboard/>}></Route>
+
+
+
+    <Route path ="banner" element={<AdminBannerList />}></Route>
+    <Route path ="banner/create" element={<AdminBannerCreate />}></Route>
+    <Route path ="banner/:id/edit" element={<AdminBannerEdit />}></Route>
+
+
+    <Route path='*' element = {<NotFound url="/admin"  redirecteTxt="Go Back to Dashboard" />}></Route> 
+  </Route>
+
+  <Route path="/seller" element={<AllowUser allowUser="seller" >
+      <AdminPageLayout />
+      </AllowUser>}>
     <Route index element={<AdminDashboard/>}></Route>
   </Route>
 
   </Routes>
 
   </BrowserRouter>
-
+  </>
+  </AuthProvider>
+  </GoogleOAuthProvider>
   </>)
 }
 

@@ -1,5 +1,8 @@
 import{useController, Controller} from "react-hook-form"
-import { INPUT_TYPE, ITextInputComponent } from "./input.contract"
+import { INPUT_TYPE, ITextInputComponent,ISelectProps,IFileInputComponent  } from "./input.contract"
+import  Select  from "react-select"
+import { FaPaperPlane } from "react-icons/fa"
+import { useState } from "react"
 
 export const TextInputComponent = ({type=INPUT_TYPE.TEXT, defaultValue='', name, control, msg}: ITextInputComponent) =>{
   const {field} = useController({
@@ -13,20 +16,19 @@ export const TextInputComponent = ({type=INPUT_TYPE.TEXT, defaultValue='', name,
     return(<>
        
        <input
-                 type={type}
-                 id={name}
-                {...field}
+         type={type}
+         id={name}
+         {...field}
               
-                 className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-               />
-               <span className="text-sm italic text-red-700">{msg}</span>
+           className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+            />
+          <span className="text-sm italic text-red-700">{msg}</span>
        </>)
    }
 
 
    export const TextAreaInputComponent =({control, defaultValue='', name, msg}:ITextInputComponent)=>{
     
-
     const {field} = useController({
     control: control,
     name: name,
@@ -67,4 +69,95 @@ export const RoleSelector = ({control, name ,defaultValue, msg}:ITextInputCompon
   </>)
 }
 
+export const SelectComponent = ({options, name, control, defaultValue, msg, multiple= false}: ISelectProps ) =>{
+  const {field} = useController({
+    control: control,
+    name: name,
+    defaultValue: defaultValue
+  })
+
+  return(<>
+     <Select
+     options={options}
+     {...field} 
+     isMulti = {multiple}
+
+   />
+  <span className="text-sm italic text-red-700">{msg}</span>
+
+  </>)
+}
+
+
+export const StatusSelector = ({control, name, defaultValue, msg}: ITextInputComponent) =>{
+
+return(<>
+<SelectComponent
+options = {[{label: "Publish", value:"active"},{label: "UnPublish", value:"inactive"}]} 
+control= {control}
+name= {name}
+defaultValue = {defaultValue}
+msg = {msg}
+> 
+</SelectComponent>
+</>)
+}
+
+
+
+
+   export const SingleImageUpload = ({name, setValue, msg,imageUrl=null}: IFileInputComponent) =>{
+    const [thumb, setThumb] = useState();
+
+  return(<>
+<div className="flex">
+  
+  <div className="w-3/4 me-3">
+
+  <input
+   className="block w-3/4 me-3 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="user_avatar_help"
+     id={name}
+     type="file"
+     name={name}
+     accept="image/*"
+     onChange= {(e: any)=>{
+      e.preventDefault()
+      const name = e.target.name;
+      const image = e.target.files[0];
+      setValue(name, image)
+      setThumb(image);
+     }}
+     />
+      </div>
+     <img className="w-1/4" src={thumb && typeof thumb==='object'? URL.createObjectURL(thumb):(imageUrl && typeof imageUrl === 'string' ? imageUrl: 'https://placehold.co/600x400.pngImage+not+found')} alt="image" />
+  </div>
+      <span className="text-sm italic text-red-700">{msg as string}</span>
+     
+  </>)
+}
+
+export const SubmitButton = ({btnTxt, loading=false}:{btnTxt: string, loading: boolean}) => {
+  return(<>
+<button
+ type="submit"
+ disabled={loading}
+  className="me-3 inline-flex items-center disabled:cursor-not-allowed disabled:bg-teal-700/20 px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-teal-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+<FaPaperPlane className="me-3"></FaPaperPlane> {btnTxt}
+</button>
+</>)
+
+}
+ 
+
+export const CancelButton = ({btnTxt, loading=false}:{btnTxt: string, loading: boolean}) => {
+  return(<>
+<button
+ type="submit"
+ disabled={loading}
+  className="me-3 inline-flex items-center disabled:cursor-not-allowed disabled:bg-red-700/20  px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-red bg-teal-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
+<FaPaperPlane className="me-3"></FaPaperPlane> {btnTxt}
+</button>
+</>)
+
+}
 

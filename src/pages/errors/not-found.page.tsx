@@ -1,5 +1,6 @@
+import { NavLink } from "react-router-dom";
 
-const NotFound =() => {
+const NotFound =({url = '/', redirecteTxt= "Go back"}: {url: string, redirecteTxt: string} ) => {
 return(<>
 
 
@@ -21,12 +22,12 @@ return(<>
         Try searching again, or return home to start from the beginning.
       </p>
 
-      <a
-        href="/home"
-        className="mt-6 inline-block rounded bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring"
-      >
-        Go Back Home
-      </a>
+      
+       <p className="mt-5 inline-block rounded bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring">
+       <NavLink className= "text-cyan-700" to={url}>{redirecteTxt} </NavLink>
+
+        </p>
+      
       
     </div>
   </div>

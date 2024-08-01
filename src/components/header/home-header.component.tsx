@@ -1,52 +1,51 @@
 import{ Navbar, MegaMenu} from "flowbite-react"
 import LinkComponent from "../common/navbar-link.component";
+import { useContext } from "react";
+import AuthContext
+ from "../../context/auth.context";
 
 
-const HomeHeader =()=>{
+
+const HomeHeader = () => {
+  
+  const auth: any = useContext(AuthContext);
+  console.log(auth)
+
+
   return(<>
   <Navbar fluid rounded className="bg-gray-200 h-20 py-5 border-gray-200">
       <Navbar.Brand href="/" className="mx-0 md:mx-6 lg:mx-10 xl:mx-16">
         {/* <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" /> */}
-        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Flowbite React</span>
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Ecommerce</span>
       </Navbar.Brand >
       <div className="flex md:order-2">
+
+
         <Navbar.Collapse>
      
-        
+      {
+        auth && auth.loggedInUser ? <>
+         <LinkComponent link={"/"+ auth.loggedInUser.role} icon="&rarr;" text={auth.loggedInUser.name}/>
+         <LinkComponent link="/logout" icon="&rarr;" text="logout"/>
+        </>: <>
         <LinkComponent link="/register" icon="&rarr;" text="Register"/>
         <LinkComponent link="/login" icon="&rarr;" text="login"/>
-
-
-          
-          <Navbar.Link href="/login">login &rarr;</Navbar.Link>
+        
+        </>
+      }
+        {/* <Navbar.Link href="/login">login &rarr;</Navbar.Link> */}
         </Navbar.Collapse>
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Navbar.Link href="#" active>
-        <LinkComponent link="/"  text="Home"/>
-        </Navbar.Link>
-        <Navbar.Link href="#">About</Navbar.Link>
+
+
         
-        <MegaMenu>
-      <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4 md:space-x-8">
-        <Navbar.Brand href="/">
-          <img alt="" src="/favicon.svg" className="mr-3 h-6 sm:h-9" />
-          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Flowbite</span>
-        </Navbar.Brand>
-        <div className="order-2 hidden items-center md:flex">
-          <a
-            href="#"
-            className="mr-1 rounded-lg px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-800 md:mr-2 md:px-5 md:py-2.5"
-          >
-            Login
-          </a>
-          {/* <Button href="#">Sign up</Button> */}
-        </div>
-        <Navbar.Toggle />
-        <Navbar.Collapse>
-          <Navbar.Link href="#">Home</Navbar.Link>
-          <Navbar.Link>
+        <Navbar.Link href="#" active>
+        <LinkComponent link="/"  text="Home"/> </Navbar.Link>
+        <Navbar.Link href="#">About   </Navbar.Link>
+        
+      
             <MegaMenu.Dropdown toggle={<>Company</>}>
               <ul className="grid grid-cols-3">
                 <div className="space-y-4 p-4">
@@ -112,22 +111,15 @@ const HomeHeader =()=>{
                 </div>
               </ul>
             </MegaMenu.Dropdown>
-          </Navbar.Link>
+          
           <Navbar.Link href="#">Team</Navbar.Link>
           <Navbar.Link href="#">Contact</Navbar.Link>
         </Navbar.Collapse>
-      </div>
-    </MegaMenu>
-
-        <Navbar.Link href="#">Pricing</Navbar.Link>
-        <Navbar.Link href="#">Contact</Navbar.Link>
-      </Navbar.Collapse>
+    
+    
     </Navbar>
   
   </>)
 }
 
 export default HomeHeader;
-
-
-

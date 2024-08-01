@@ -5,6 +5,8 @@ import "flowbite";
 
 
 const AdminPageLayout = () => {
+
+  
   return (
     <>
       <div className="antialiased bg-gray-50 dark:bg-gray-900">

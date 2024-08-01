@@ -12,9 +12,7 @@ const HomePageLayout =()=>{
 
     <Outlet />
 
-    <footer className="mt-5 h-52 bg-slate-200">
-        &copy; All Right are Reserved
-    </footer>
+   
 
     </>)
 }

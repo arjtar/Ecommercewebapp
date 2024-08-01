@@ -1,19 +1,20 @@
 import { NavLink, useNavigate, } from "react-router-dom"
 import bannerImage from "../../../assets/images/register-page.jpg";
-import { BaseSyntheticEvent, useState  } from "react";
+import { BaseSyntheticEvent, useState, useEffect, useContext  } from "react";
 import { INPUT_TYPE } from "../../../components/common/form/input.contract";
 import { InputLabel } from "../../../components/common/form/label.component";
 import { RoleSelector, TextInputComponent,TextAreaInputComponent } from "../../../components/common/form/input.component";
-
 import {useForm} from "react-hook-form";
 import authSvc from "../auth.service";
-
 import { yupResolver } from "@hookform/resolvers/yup";
-import {toast} from "react-toastify"
+import {toast} from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
+import AuthContext from "../../../context/auth.context";
 
 const RegisterPage = ()=>{
 const registrationDTO = authSvc.registerUserDto()
 const [loading, setLoading] = useState(false);
+const auth: any = useContext(AuthContext);  //
 
 
 const {control, handleSubmit, setValue, setError, formState:{errors}} = useForm({
@@ -47,9 +48,14 @@ try{
   setLoading(false);
   }
 }
-
-
 console.log(errors)
+
+useEffect(() =>{
+  if(auth.loggedInUser){
+    toast.info("You are already loggged in")
+    navigate("/" + auth.loggedInUser.role)
+  }
+}, [auth])
 
 return(<>
 
@@ -231,6 +237,16 @@ return(<>
             </p>
           </div>
         </form>
+
+        <GoogleLogin
+     onSuccess={credentialResponse => {
+    console.log(credentialResponse);
+     }}
+      onError={() => {
+    console.log('Login Failed');
+      }}
+    />
+
       </div>
     </main>
   </div>

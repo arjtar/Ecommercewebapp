@@ -26,7 +26,10 @@ const CategoryDetailPage = () => {
   return(<>
 
 
-<HomePageTitle title={`category Detail of ${params.slug}`}/> 
+<HomePageTitle title={`category Detail of ${params.slug}`}  
+             url={`/category/${params.slug}`}/>
+
+
 
 <button className="me-3" onClick={(e) =>{
     e.preventDefault()
@@ -54,7 +57,8 @@ const CategoryDetailPage = () => {
   
 </>)
 }
-export default CategoryDetailPage
+
+export default CategoryDetailPage;
 
 
 

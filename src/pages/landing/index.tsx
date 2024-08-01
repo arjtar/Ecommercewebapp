@@ -41,7 +41,7 @@ const LandingPage = ()=>{
 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:gris-cols-3 xl:gris-cols-5 mx-3 md:mx-20 py-5 gap-2 mt-5">
 
   {
-    [...Array(25)].map((_, i:number) => (
+    [...Array(26)].map((_, i:number) => (
       <SingleProductComponent  key={i} />
     ))
   }
