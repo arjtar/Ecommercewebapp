@@ -16,7 +16,7 @@ export interface ITextInputComponent {
     name: string,
     defaultValue?: string,
     control: any,
-    msg: string | undefined | null
+    msg?: string | undefined | null
 }
     export interface IFileInputComponent {
         name: string,

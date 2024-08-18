@@ -4,22 +4,26 @@ import  {useForm} from "react-hook-form";
 import * as Yup from "yup";
 import { InputLabel } from "../../components/common/form/label.component";
 import { CancelButton, SingleImageUpload, StatusSelector, TextInputComponent,SubmitButton } from "../../components/common/form/input.component";
-import { INPUT_TYPE } from "../../components/common/form/input.contract";
 import { useNavigate, useParams } from "react-router-dom";
 import {  toast } from 'react-toastify';
-import bannerSvc from "./banner.service";
+import brandSvc from "./brand.service";
 import LoadingComponent from "../../components/loading/loading.component";
+import { ToggleSwitch} from "flowbite-react";
 
 
-const AdminBannerEdit =() =>{
- const bannerDTO = Yup.object({
+
+const AdminBrandEdit =() =>{
+
+  const [isFeatured, setIsFeatured] = useState<boolean>(false)
+
+ const brandDTO = Yup.object({
     name: Yup.string().min(2).required(),
     status:Yup.object({
         label: Yup.string().required(),
         value: Yup.mixed().required()
     }) .required(),
     
-    link: Yup.string().url(),
+    isFeatured: Yup.boolean().default(false),
     image: Yup.mixed().required()
 
  });
@@ -27,24 +31,25 @@ const AdminBannerEdit =() =>{
  const [loading, setLoading] = useState<boolean>(true)
 
  const {control, setValue, handleSubmit, formState: {errors}} = useForm({
-    resolver: yupResolver(bannerDTO)
+    resolver: yupResolver(brandDTO)
  })
 
 const navigate = useNavigate();
 const params = useParams();
 const [detail, setDetail] = useState<any>();
 
-const getBannerDetail = useCallback(async()=>{
+const getBrandDetail = useCallback(async()=>{
 try{
-  const response :any = await bannerSvc.getRequest('/banner/'+params.id, {auth:true})
-  let bannerDetail = {
+  const response :any = await brandSvc.getRequest('/brand/',+params.id, {auth: true})
+  let brandDetail = {
     ...response.result,
-    image: import.meta.env.VITE_IMAGE_URL+"banner/"+response.result.image
+    image: import.meta.env.VITE_IMAGE_URL+"brand/"+response.result.image
 
   }
-  setDetail(bannerDetail)
+  setDetail(brandDetail)
   setValue('name', response.result.detail)
-  setValue('link', response.result.link)
+  setValue('isFeatured', response.result.isFeatured)
+  setIsFeatured(response.result.isFeatured)
   setValue('status',{
     label: response.result.status === 'active' ? "Publish": "Unpublish",
     value: response.result.status
@@ -55,13 +60,13 @@ try{
   setLoading(false)
 
 }catch(exception){
-  toast.error("Banner cannot be fetched.")
-  navigate("/admin/banner")
+  toast.error("brand cannot be fetched.")
+  navigate("/admin/brand")
 }
 }, [params])
 
 useEffect(() => {
-getBannerDetail()
+getBrandDetail()
 },[params])
 
 
@@ -70,21 +75,19 @@ getBannerDetail()
   try{
   const submitData = {
     ...data,
-    status:
-   data.status.value
-  }
+    status: data.status.value,
+    isFeatured: isFeatured
 
-  
-  if(typeof submitData.Image ! == 'object'){
-    delete submitData.image;
   }
-   await bannerSvc.putRequest('/banner/'+params.id, submitData,{auth: true, file: true})
-   toast.success("Banner Edit successsfully")
-   navigate("/admin/banner")
+  console.log(submitData)
+  
+  //  await brandSvc.postRequest('/brand',submitData,{auth: true, file: true})
+  //  toast.success("brand Edit successsfully")
+  //  navigate("/admin/brand")
 
    }catch(exception){
     console.log(exception);
-    toast.error("Banner cannot be update at this moment.")
+    toast.error("brand cannot be update at this moment.")
 
    }finally{
     setLoading(false)
@@ -119,12 +122,8 @@ getBannerDetail()
 
             <div className="sm:col-span-2">
                 <InputLabel htmlFor="link">Link: </InputLabel>
-                <TextInputComponent
-              name= "link"
-              type= {INPUT_TYPE.URL}
-              control= {control}
-              msg={errors?.link?.message}
-              />
+                <ToggleSwitch checked={isFeatured} label="" onChange={setIsFeatured} />
+
               </div>
             
 
@@ -153,7 +152,7 @@ getBannerDetail()
           </div>
           <CancelButton loading={loading as boolean} btnTxt="cancel"></CancelButton>
 
-         <SubmitButton loading= {loading as boolean} btnTxt="Add Banner"></SubmitButton>
+         <SubmitButton loading= {loading as boolean} btnTxt="Add brand"></SubmitButton>
       </form>
         </>
       }
@@ -164,4 +163,4 @@ getBannerDetail()
 </>)
 } 
 
-export default AdminBannerEdit;
+export default AdminBrandEdit;

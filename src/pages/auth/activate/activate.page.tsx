@@ -24,13 +24,14 @@ const ActivationPage = () => {
     const getVerified = async() => {
         try{
             const token= params.token;
-            const response = await authSvc.getRequest('/auth/activate/' +token);
+            await  authSvc.getRequest('/auth/activate/'+token);
+            
             setMsg("your account has been activated successfully, please login to continue..")
 
 
         }catch(exception: any){
 
-            if (+exception.status=== 400 && exception.data.result && exception.data.result.hasOwnProperty('token') && exception.data.result.data==='expired') {
+            if (+exception.status=== 400 && exception.data.result && exception.data.result.hasOwnProperty('token') && exception.data.result.token==='expired') {
                 setMsg("your token has been expired. Please confirm resending the token,");
                 setIsExpired(true)
             } else {
@@ -45,7 +46,7 @@ const ActivationPage = () => {
     const resendToken = async()=>{
         try{
             setLoading(true);
-            await authSvc.getRequest("/auth/resend-token/" + params.token);
+            await authSvc.getRequest("/auth/resend-token/"+params.token);
             setMsg("a new activation email has been sent to your registerd email. Please check for further process")
             // setIsExpired(false);
         }catch(exception) {

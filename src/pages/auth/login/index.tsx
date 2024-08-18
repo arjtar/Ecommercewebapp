@@ -8,11 +8,18 @@ import authSvc from "../auth.service";
 import { useNavigate  } from "react-router-dom";
 import AuthContext from "../../../context/auth.context";
 import { useEffect, useContext } from "react";
+import { setLoggedInUser } from "../../../reducer/auth.reducer";
+import { useDispatch } from "react-redux";
+import { useLoginMutation } from "../authApi";
+
 
 
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const[login, {isLoading}] = useLoginMutation();
 
   const auth: any = useContext(AuthContext);
 
@@ -27,11 +34,16 @@ const LoginPage = () => {
 
     const loginAction = async(data: any) =>{
       try{
-        const response = await authSvc.postRequest('auth/login', data);
+        const response = await login(data).unwrap();
+
+
+        // const response = await authSvc.postRequest('auth/login', data);
         localStorage.setItem('_act ', response.result.token.access)
         localStorage.setItem('_rft ', response.result.token.refresh)
         toast.success("welcome to" +response.result.userDetail.role+ "pannel")
         auth.setLoggedInUser(response.result.userDetail);
+
+        dispatch(setLoggedInUser(response.result.userDetail));
 
         navigate('/'+response.result.userDetail.role)
         

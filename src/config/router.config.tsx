@@ -14,11 +14,33 @@ import "react-toastify/ReactToastify.css"
 import AllowUser from "./permission.config";
 
 import { AdminBannerList, AdminBannerCreate, AdminBannerEdit } from "../pages/banner";
+import { AdminBrandList, AdminBrandCreate, AdminBrandEdit } from "../pages/brand";
 
+import { useEffect, useState } from "react";
+import { getLoggedInUserFormReducer} from "../reducer/auth.reducer";
+import LoadingComponent from "../components/loading/loading.component";
+import { useDispatch } from "react-redux";
+import ChatListView from "../pages/chat/chat.page";
 
 const RouterConfig = ()=>{
+ const dispatch = useDispatch();
+ const[loading, setLoading] = useState(true);
+
+
+ useEffect(()=>{
+  const token = localStorage.getItem("_act") || null;
+   if(token) {
+    dispatch(getLoggedInUserFormReducer())
+   }
+   setLoading(false)
+ },[])
+
     return(<>
-    <GoogleOAuthProvider clientId="893713264453-icn6ofnbgj9is0ffijlr9f3qg91d971r.apps.googleusercontent.com">
+
+
+{
+  loading ? <LoadingComponent /> : <>
+  <GoogleOAuthProvider clientId="893713264453-icn6ofnbgj9is0ffijlr9f3qg91d971r.apps.googleusercontent.com">
     <AuthProvider>
 
       <>
@@ -36,6 +58,8 @@ const RouterConfig = ()=>{
 
 
    <Route path='category:slug' element={<CategoryDetailPage/>}></Route>
+
+   <Route path='chat' element={<ChatListView/>}></Route>
    <Route path='*' element = {<NotFound url="/" redirecteTxt="Go Back to home Page"/>}></Route> 
   </Route>
 
@@ -49,6 +73,10 @@ const RouterConfig = ()=>{
     <Route path ="banner" element={<AdminBannerList />}></Route>
     <Route path ="banner/create" element={<AdminBannerCreate />}></Route>
     <Route path ="banner/:id/edit" element={<AdminBannerEdit />}></Route>
+
+    <Route path ="brand" element={<AdminBrandList />}></Route>
+    <Route path ="brand/create" element={<AdminBrandCreate />}></Route>
+    <Route path ="brand/:id/edit" element={<AdminBrandEdit />}></Route>
 
 
     <Route path='*' element = {<NotFound url="/admin"  redirecteTxt="Go Back to Dashboard" />}></Route> 
@@ -65,8 +93,14 @@ const RouterConfig = ()=>{
   </BrowserRouter>
   </>
   </AuthProvider>
-  </GoogleOAuthProvider>
-  </>)
+  
+  </GoogleOAuthProvider> 
+  </>
 }
+</>)
+}
+
+
+
 
 export default RouterConfig
