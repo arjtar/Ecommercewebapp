@@ -1,19 +1,21 @@
-import HomeHeader from "../../components/header/home-header.component"
 import { Outlet } from "react-router-dom"
+import HomeHeader from "../../components/header/home-header.component"
 
-const HomePageLayout =()=>{
+const HomePageLayout = () => {
     return (<>
-    <div className="py-5 bg-cyan-200 px-10 ">
-        <p className=" mx-0 md:mx-6 lg:mx-10 xl:mx-16">
-            Purchase it with Discount.<span className="text-cyan-100 font-bold">Free Delivery</span>
-        </p>
-    </div>
-    <HomeHeader />
+        <div className="py-3 bg-cyan-100">
+            <p className=" mx-0 md:mx-6 lg:mx-10 xl:mx-16">
+                Over the purchase of Npr.10,000, <span className="text-cyan-800 font-bold">Free Delivery</span>
+            </p>
+        </div>
+        <HomeHeader />
 
-    <Outlet />
+        <Outlet />
+    
 
-   
-
+        <footer className="mt-5 h-52 flex items-center justify-center bg-slate-100">
+            &copy; All Rights Reserved
+        </footer>
     </>)
 }
 

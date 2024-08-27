@@ -1,11 +1,11 @@
-function setCookie(cname: string, cvalue:any, exhours: number) {
+function setCookie(cname:string, cvalue:any, exHours: number): void {
     const d = new Date();
-    d.setTime(d.getTime() + (exhours *60 *60 *1000));
+    d.setTime(d.getTime() + (exHours * 60 * 60 * 1000));
     let expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-  }
+}
 
-  function getCookie(cname: string):string {
+function getCookie(cname: string):string {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(';');
@@ -19,9 +19,10 @@ function setCookie(cname: string, cvalue:any, exhours: number) {
       }
     }
     return "";
-  }
+}
 
-  export {
+
+export {
     setCookie,
     getCookie
-  }
+}

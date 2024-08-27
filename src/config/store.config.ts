@@ -4,13 +4,11 @@ import { authApi } from "../pages/auth/authApi";
 
 
 const store = configureStore({
-    
     reducer: {
         auth: authReducer,
-        [authApi.reducerPath] :authApi.reducer
-
+        [authApi.reducerPath]: authApi.reducer
     },
-    middleware: (getDefaultMiddleware) =>
+    middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware().concat(authApi.middleware)
 });
 

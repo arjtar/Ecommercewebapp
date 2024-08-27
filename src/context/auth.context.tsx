@@ -1,58 +1,52 @@
-import {createContext,useState , useEffect} from "react";
+import { createContext, useEffect, useState } from "react";
+import LoadingComponent from "../components/common/loading/loading.component";
 import authSvc from "../pages/auth/auth.service";
-import LoadingComponent from "../components/loading/loading.component";
 
 let AuthContext = createContext({});
 
- export const AuthProvider =  ({children}: {children: any}) =>{
 
-let [loggedInUser, setLoggedInUser] = useState();
-let [loading, setloading] = useState<boolean>();
+export const AuthProvider = ({children}: {children: any}) => {
+    let [loggedInUser, setLoggedInUser] = useState();
+    let [loading, setLoading] = useState<boolean>();
+    // 
+    const getLoggedInUser = async() => {
+        setLoading(true);
+        try {
+            const response: any = await authSvc.getRequest("/auth/me", {auth: true});
+            setLoggedInUser(response.result)
+            setLoading(false)
+        } catch(exception: any) {
+            // error 
+            if(exception.status === 401) {
+                if(exception.data.message === "jwt expired") {
+                    
+                }
 
-
- const getLoggedInUser = async() => {
-    setloading(true);
-
-    try{
-        const response: any = await authSvc.getRequest("/auth/me", {auth: true});
-        setLoggedInUser(response.result)
-        setloading(false)
-    }catch(exception: any){
-        if(exception.status === 401){
-            if(exception.data.message === "jwt expired"){
-
+                localStorage.removeItem("_act")
+                localStorage.removeItem("_rft")
+                // 
             }
-            localStorage.removeItem("_act")
-            localStorage.removeItem("_rft")
-
-
+            setLoading(false)
         }
-            setloading(false)
-    
     }
+    useEffect(() => {
+        const token = localStorage.getItem("_act")
+
+        if(token) {
+            getLoggedInUser()
+        } else {
+            setLoading(false)
+        }
+    }, [])
+    return (
+        <AuthContext.Provider value={{loggedInUser, setLoggedInUser}}>
+            {
+                loading ? <> 
+                    <LoadingComponent />
+                </> : <>{children}</>
+            }
+        </AuthContext.Provider>
+    )
 }
 
-useEffect(() =>{
-    const token = localStorage.getItem("_act")
-    if (token){
-        getLoggedInUser()
-
-    } else {
-        setloading(false)
-    }
-},[])
-
-
-return(
-<AuthContext.Provider value = {{loggedInUser, setLoggedInUser}}>
-{
-    loading ? <>
-    <LoadingComponent/>
-    </> : <>{children}</>
-}
-
-</AuthContext.Provider>
-)
-
-}
 export default AuthContext;

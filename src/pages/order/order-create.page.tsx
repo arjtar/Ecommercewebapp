@@ -5,14 +5,14 @@ import * as Yup from "yup";
 import { InputLabel } from "../../components/common/form/lable.component";
 import { CancelButton, SingleImageUpload, StatusSelector, SubmitButton, TextInputComponent } from "../../components/common/form/input.component";
 import { toast } from "react-toastify";
-import brandSvc from "./brand.service";
+import orderSvc from "./order.service";
 import { useNavigate } from "react-router-dom";
 import { ToggleSwitch } from "flowbite-react";
 
 const AdminBrandCreate = () => {
     const [isFeatured, setIsFeatured] = useState<boolean>(false);
 
-    const brandDTO = Yup.object({
+    const orderDTO = Yup.object({
         name: Yup.string().min(2).required(), 
         status: Yup.object({
             label: Yup.string().required(),
@@ -25,7 +25,7 @@ const AdminBrandCreate = () => {
     const [loading, setLoading] = useState<boolean>(false)
 
     const {control, setValue, handleSubmit,setError, formState: {errors}} = useForm({
-        resolver: yupResolver(brandDTO)
+        resolver: yupResolver(orderDTO)
     })
     const navigate = useNavigate();
 
@@ -38,9 +38,9 @@ const AdminBrandCreate = () => {
                 isFeatured: isFeatured
             }
             // console.log(submitData)
-            await brandSvc.postRequest('/brand', submitData, {auth: true, file: true})
+            await orderSvc.postRequest('/order', submitData, {auth: true, file: true})
             toast.success("Brand created successfully.")
-            navigate("/admin/brand")
+            navigate("/admin/order")
         } catch(exception: any) {
             if(+exception.status === 422) {
                 const msgs = exception.data.result;
